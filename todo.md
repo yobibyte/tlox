@@ -1,6 +1,4 @@
 -----------
-read file
------------
 make prompt loop
 -----------
 make run() function that generalises the prompt/file reading.
