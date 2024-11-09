@@ -4,7 +4,7 @@ use std::io::Write;
 
 fn run_file(filepath: &str) {
     let fcontent = fs::read_to_string(filepath).expect("Could not load a file {filepath}");
-    println!("{fcontent}");
+    tlox::run(&fcontent);
 }
 
 fn run_prompt() {
@@ -16,6 +16,9 @@ fn run_prompt() {
         stdin
             .read_line(&mut buf)
             .expect("Couldn't parse a line: {line}");
+        if buf.trim().is_empty() {
+            break;
+        }
         tlox::run(&buf);
     }
 }
