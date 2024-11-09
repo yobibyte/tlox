@@ -16,12 +16,8 @@ fn run_prompt() {
         stdin
             .read_line(&mut buf)
             .expect("Couldn't parse a line: {line}");
-        run(&buf);
+        tlox::run(&buf);
     }
-}
-
-fn run(line: &String) {
-    println!("{line}");
 }
 
 fn main() {

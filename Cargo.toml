@@ -4,3 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+
+
+[lib]
+name = "tlox"
+path = "src/lib.rs" # Default for `lib.rs`
+
+[[bin]]
+name = "tlox_bin"
+path = "src/main.rs" # Default for `main.rs`
