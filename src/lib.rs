@@ -27,7 +27,26 @@ impl<'a> Scanner<'a> {
     }
 }
 
-pub fn run(line: &str) {
+pub struct ErrorHandler {
+    pub has_error: bool,
+}
+
+impl ErrorHandler {
+    pub fn new() -> Self {
+        ErrorHandler { has_error: false }
+    }
+    pub fn error(&mut self, line: u32, message: &str) {
+        self.report(line, "", message);
+    }
+    fn report(&mut self, line: u32, loc: &str, message: &str) {
+        eprintln!("[line {line}] Error {loc}: {message}.");
+        self.has_error = true;
+    }
+    pub fn reset(&mut self) {
+        self.has_error = false;
+    }
+}
+pub fn run(line: &str, _err_handler: &ErrorHandler) {
     let mut scanner = Scanner::new(line);
     scanner.scan_tokens();
     for tok in scanner.tokens {
