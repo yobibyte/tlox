@@ -50,6 +50,7 @@ enum TokenType {
 
 enum LiteralType {
     Str(String),
+    Num(f64),
     Null,
 }
 
@@ -169,15 +170,22 @@ impl<'a> Scanner<'a> {
             ' ' | '\r' | '\t' => {}
             '\n' => self.line += 1,
             '"' => self.process_string(),
+            c if c.is_digit(10) => self.process_number(),
             // TODO check why we get 'unexpected character' error at '()' code. Is it \n symbol?
             _ => self.error_handler.error(self.line, "Unexpected character."),
         }
     }
     fn peek(&self) -> char {
         if self.is_at_end() {
-            return '\0'; //double check that this is correct one in rust
+            return '\0'; //double check that this is correct one in rust @critical
         }
         self.char_at(self.current)
+    }
+    fn peek_next(&self) -> char {
+        if self.current + 1 >= self.source.len() {
+            return '\0'; //double check that this is correct one in rust @critical
+        }
+        self.char_at(self.current + 1)
     }
     fn scan_tokens(&mut self) {
         while !self.is_at_end() {
@@ -216,10 +224,32 @@ impl<'a> Scanner<'a> {
 
         // Trim quotes from the string.
         // TODO shouldn't we set the start properly?
-        let value: String = self.source[self.start + 1..self.current - 1]
-            .iter()
-            .collect();
+        // TODO check that we take the last char of a string properly. @critical
+        let value: String = self.source[self.start + 1..self.current].iter().collect();
         self.add_token(TokenType::String, LiteralType::Str(value));
+    }
+    fn process_number(&mut self) {
+        while self.peek().is_digit(10) {
+            self.advance();
+        }
+        // fractional part
+        if self.peek() == '.' && self.peek_next().is_digit(10) {
+            //consume the dot
+            self.advance();
+        }
+        // get the post dot digits
+        while self.peek().is_digit(10) {
+            self.advance();
+        }
+
+        // TODO: check that we take the last digit due to boundary exclusion. @critical
+        let value: String = self.source[self.start..self.current].iter().collect();
+        // TODO: do error handling with the handler. Proceed further. Add a NULL token mb?
+        let value: f64 = value
+            .to_string()
+            .parse()
+            .expect("Could not parse a double.");
+        self.add_token(TokenType::Number, LiteralType::Num(value));
     }
 }
 
