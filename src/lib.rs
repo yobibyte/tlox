@@ -45,7 +45,7 @@ enum TokenType {
     Var,
     While,
 
-    EOF,
+    Eof,
 }
 
 enum LiteralType {
@@ -184,7 +184,7 @@ impl<'a> Scanner<'a> {
             self.start = self.current;
             self.scan_token();
         }
-        self.add_token_wo_literal(TokenType::EOF);
+        self.add_token_wo_literal(TokenType::Eof);
     }
     fn is_at_end(&self) -> bool {
         self.current == self.source.len()
@@ -223,13 +223,14 @@ impl<'a> Scanner<'a> {
     }
 }
 
+#[derive(Default)]
 pub struct ErrorHandler {
     pub has_error: bool,
 }
 
 impl ErrorHandler {
     pub fn new() -> Self {
-        ErrorHandler { has_error: false }
+        Self::default()
     }
     pub fn error(&mut self, line: usize, message: &str) {
         self.report(line, "", message);
