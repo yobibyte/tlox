@@ -168,6 +168,7 @@ impl<'a> Scanner<'a> {
             }
             ' ' | '\r' | '\t' => {}
             '\n' => self.line += 1,
+            '"' => self.process_string(),
             // TODO check why we get 'unexpected character' error at '()' code. Is it \n symbol?
             _ => self.error_handler.error(self.line, "Unexpected character."),
         }
@@ -197,6 +198,28 @@ impl<'a> Scanner<'a> {
         }
         self.current += 1;
         true
+    }
+    fn process_string(&mut self) {
+        while self.peek() != '"' && !self.is_at_end() {
+            if self.peek() == '\n' {
+                self.line += 1;
+            }
+            self.advance();
+        }
+        if self.is_at_end() {
+            self.error_handler.error(self.line, "Unterminated string.");
+            return;
+        }
+
+        // Take the closing quote "
+        self.advance();
+
+        // Trim quotes from the string.
+        // TODO shouldn't we set the start properly?
+        let value: String = self.source[self.start + 1..self.current - 1]
+            .iter()
+            .collect();
+        self.add_token(TokenType::String, LiteralType::Str(value));
     }
 }
 
