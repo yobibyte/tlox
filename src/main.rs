@@ -7,8 +7,8 @@ static INPUT_RELATED_EXIT_CODE: i32 = 65;
 
 fn run_file(filepath: &str) {
     let fcontent = fs::read_to_string(filepath).expect("Could not load a file {filepath}");
-    let err_handler = tlox::ErrorHandler::new();
-    tlox::run(&fcontent, &err_handler);
+    let mut err_handler = tlox::ErrorHandler::new();
+    tlox::run(&fcontent, &mut err_handler);
     if err_handler.has_error {
         process::exit(INPUT_RELATED_EXIT_CODE);
     }
@@ -27,7 +27,7 @@ fn run_prompt() {
         if buf.trim().is_empty() {
             break;
         }
-        tlox::run(&buf, &err_handler);
+        tlox::run(&buf, &mut err_handler);
         err_handler.reset();
     }
 }
