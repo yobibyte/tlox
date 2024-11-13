@@ -3,11 +3,13 @@ use std::io;
 use std::io::Write;
 use std::process;
 
+use tlox::scanner::ErrorHandler;
+
 static INPUT_RELATED_EXIT_CODE: i32 = 65;
 
 fn run_file(filepath: &str) {
     let fcontent = fs::read_to_string(filepath).expect("Could not load a file {filepath}");
-    let mut err_handler = tlox::ErrorHandler::new();
+    let mut err_handler = ErrorHandler::new();
     tlox::run(&fcontent, &mut err_handler);
     if err_handler.has_error {
         process::exit(INPUT_RELATED_EXIT_CODE);
@@ -15,7 +17,7 @@ fn run_file(filepath: &str) {
 }
 
 fn run_prompt() {
-    let mut err_handler = tlox::ErrorHandler::new();
+    let mut err_handler = ErrorHandler::new();
     loop {
         print!("> ");
         io::stdout().flush().expect("Failed to flush.");

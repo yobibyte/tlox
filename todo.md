@@ -1,8 +1,7 @@
-add error handling
 -----------
-add token types enum
+finish todos for chap4
 -----------
-token struct
+write unit tests
 -----------
-implement scanner
+write one functional test that takes the testfile and does not crash
 -----------

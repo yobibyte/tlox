@@ -3,3 +3,8 @@
 ()
 {}
 // comment
+t = "string"
+t= "string"
+3.14
+b = "a"
+"string"
