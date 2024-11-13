@@ -1,28 +1,6 @@
 use std::fmt;
 
-use std::collections::HashMap;
-use std::sync::LazyLock;
-
-static KEYWORDS: LazyLock<HashMap<String, TokenType>> = LazyLock::new(|| {
-    let mut m = HashMap::new();
-    m.insert("and".to_string(), TokenType::And);
-    m.insert("class".to_string(), TokenType::Class);
-    m.insert("else".to_string(), TokenType::Else);
-    m.insert("false".to_string(), TokenType::False);
-    m.insert("for".to_string(), TokenType::For);
-    m.insert("fun".to_string(), TokenType::Fun);
-    m.insert("if".to_string(), TokenType::If);
-    m.insert("nil".to_string(), TokenType::Nil);
-    m.insert("or".to_string(), TokenType::Or);
-    m.insert("print".to_string(), TokenType::Print);
-    m.insert("return".to_string(), TokenType::Return);
-    m.insert("super".to_string(), TokenType::Super);
-    m.insert("this".to_string(), TokenType::This);
-    m.insert("true".to_string(), TokenType::True);
-    m.insert("var".to_string(), TokenType::Var);
-    m.insert("while".to_string(), TokenType::While);
-    m
-});
+use crate::types::{TokenType, KEYWORDS};
 
 enum LiteralType {
     Str(String),
@@ -39,6 +17,17 @@ impl fmt::Display for LiteralType {
     }
 }
 
+pub struct Scanner<'a> {
+    // I use to have source: &str here before.
+    // At this point it seems easier to store source as array of chars instead of just a &str.
+    // String indexing is hard, and iterating over a .chars().ith(i) iterator sounds crazy.
+    source: Vec<char>,
+    pub tokens: Vec<Token>,
+    start: usize,
+    current: usize,
+    line: usize,
+    error_handler: &'a mut ErrorHandler,
+}
 impl<'a> Scanner<'a> {
     pub fn new(source: &str, error_handler: &'a mut ErrorHandler) -> Self {
         Self {
@@ -131,7 +120,6 @@ impl<'a> Scanner<'a> {
                 self.add_token_wo_literal(TokenType::Or);
             }
             c if c.is_ascii_alphabetic() || c == '_' => self.process_identifier(),
-            // TODO check why we get 'unexpected character' error at '()' code. Is it \n symbol?
             _ => self.error_handler.error(self.line, "Unexpected character."),
         }
     }
@@ -205,7 +193,6 @@ impl<'a> Scanner<'a> {
             self.advance();
         }
 
-        // TODO: check that we take the last digit due to boundary exclusion. @critical
         let value: String = self.source[self.start..self.current].iter().collect();
         // TODO: do error handling with the handler. Proceed further. Add a NULL token mb?
         let value: f64 = value
@@ -227,68 +214,6 @@ impl<'a> Scanner<'a> {
     }
 }
 
-pub struct Scanner<'a> {
-    // I use to have source: &str here before.
-    // At this point it seems easier to store source as array of chars instead of just a &str.
-    // String indexing is hard, and iterating over a .chars().ith(i) iterator sounds crazy.
-    source: Vec<char>,
-    pub tokens: Vec<Token>,
-    start: usize,
-    current: usize,
-    line: usize,
-    error_handler: &'a mut ErrorHandler,
-}
-
-#[derive(Copy, Clone, Debug)]
-pub enum TokenType {
-    // Single-character tokens.
-    LeftParen,
-    RightParen,
-    LeftBrace,
-    RightBrace,
-    Comma,
-    Dot,
-    Minus,
-    Plus,
-    Semicolon,
-    Slash,
-    Star,
-
-    // One or two character tokens.
-    Bang,
-    BangEqual,
-    Equal,
-    EqualEqual,
-    Greater,
-    GreaterEqual,
-    Less,
-    LessEqual,
-
-    // Literals.
-    Identifier,
-    String,
-    Number,
-
-    // Keywords.
-    And,
-    Class,
-    Else,
-    False,
-    Fun,
-    For,
-    If,
-    Nil,
-    Or,
-    Print,
-    Return,
-    Super,
-    This,
-    True,
-    Var,
-    While,
-
-    Eof,
-}
 
 pub struct Token {
     ttype: TokenType,
@@ -298,7 +223,6 @@ pub struct Token {
 }
 impl Token {
     fn new(ttype: TokenType, lexeme: String, literal: LiteralType, line: usize) -> Token {
-        //TODO: make this a parameter.
         Token {
             ttype,
             lexeme,

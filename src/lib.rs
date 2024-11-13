@@ -1,4 +1,5 @@
 pub mod scanner;
+pub mod types;
 
 use scanner::{ErrorHandler, Scanner};
 
