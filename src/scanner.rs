@@ -214,7 +214,6 @@ impl<'a> Scanner<'a> {
     }
 }
 
-
 pub struct Token {
     ttype: TokenType,
     lexeme: String,
