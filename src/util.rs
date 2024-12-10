@@ -81,3 +81,5 @@ impl<T: Ord> BinaryTree<T> {
         self.root.len()
     }
 }
+
+// TODO(yobi): operator should be stored as values in the tree
