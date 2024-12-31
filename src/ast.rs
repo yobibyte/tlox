@@ -28,6 +28,6 @@ fn main() {
             ];
             define_ast(output_dir, String::from("Expr"), grammar);
         }
-        _ => println!("Usage: generate_ast [script]"),
+        _ => println!("Usage: generate_ast [output_dir]"),
     }
 }
