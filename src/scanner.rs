@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::types::{TokenType, KEYWORDS};
 
-enum LiteralType {
+pub enum LiteralType {
     Str(String),
     Num(f64),
     Null,
@@ -221,7 +221,7 @@ pub struct Token {
     line: usize,
 }
 impl Token {
-    fn new(ttype: TokenType, lexeme: String, literal: LiteralType, line: usize) -> Token {
+    pub fn new(ttype: TokenType, lexeme: String, literal: LiteralType, line: usize) -> Token {
         Token {
             ttype,
             lexeme,
@@ -232,7 +232,7 @@ impl Token {
 }
 impl fmt::Display for Token {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{:?} {} {}", self.ttype, self.lexeme, self.literal)
+        write!(f, "{}{}", self.lexeme, self.literal)
     }
 }
 #[derive(Default)]

@@ -8,11 +8,10 @@ pub fn define_ast(output_fpath: String, base_name: String, types: Vec<String>) {
     // The original in the book had an output directory.
     // I think, using a file is better at this point.
     // This might change in the future.
-    let path: String = format!("{output_fpath}");
+    let path: String = output_fpath.to_string();
     let file = File::create(path).unwrap();
     let mut writer = BufWriter::new(&file);
     writeln!(writer, "pub struct {base_name} {{").unwrap();
-    writeln!(writer, "").unwrap();
     writeln!(writer, "}}").unwrap();
 
     for type_str in types {
@@ -23,7 +22,7 @@ pub fn define_ast(output_fpath: String, base_name: String, types: Vec<String>) {
     }
 }
 
-fn define_type<W: Write>(writer: &mut W, base_name: String, struct_name: String, fields: String) {
+fn define_type<W: Write>(writer: &mut W, _base_name: String, struct_name: String, fields: String) {
     writeln!(writer, "pub struct {struct_name} {{").unwrap();
     for field in fields.split(", ") {
         let field_str: Vec<&str> = field.split(" ").collect();
@@ -32,7 +31,6 @@ fn define_type<W: Write>(writer: &mut W, base_name: String, struct_name: String,
         writeln!(writer, "    {field_name}: {field_type},").unwrap();
     }
     writeln!(writer, "}}").unwrap();
-    writeln!(writer, "").unwrap();
 }
 
 fn main() {

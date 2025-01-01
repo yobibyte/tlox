@@ -1,22 +1,70 @@
-trait Expr {
+use core::fmt;
+// In the book, they generate this automatically.
+// I will do it manually until I understand what's going on.
+use crate::scanner::Token;
 
-}
-pub struct Binary impl Expr {
-    left: Expr,
-    operator: Token,
-    right: Expr,
+pub enum Expr {
+    Binary {
+        left: Box<Expr>,
+        operator: Token,
+        right: Box<Expr>,
+    },
+    Grouping {
+        expression: Box<Expr>,
+    },
+    Literal {
+        // value: Token,
+        // TODO ^^^ use this, in the book it's object.
+        value: String,
+    },
+    Unary {
+        operator: Token,
+        right: Box<Expr>,
+    },
 }
 
-pub struct Grouping impl Expr {
-    expression: Expr,
+impl fmt::Display for Expr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self {
+            Expr::Unary { operator, right } => write!(f, "({operator} {right})"),
+            Expr::Binary {
+                left,
+                operator,
+                right,
+            } => {
+                write!(f, "({operator} {left} {right})")
+            }
+            // TODO: the book prints nil if literal is null, how will we do it?
+            Expr::Literal { value } => write!(f, "{value}"),
+            Expr::Grouping { expression } => write!(f, "(group {expression})"),
+        }
+    }
 }
 
-pub struct Literal impl Expr {
-    value: Object,
-}
+#[cfg(test)]
+mod dests {
+    use super::*;
+    use crate::scanner::LiteralType;
+    use crate::types::TokenType;
 
-pub struct Unary impl Expr {
-    operator: Token,
-    right: Expr,
+    #[test]
+    fn test_expr_display() {
+        let expression = Expr::Binary {
+            left: Box::new(Expr::Unary {
+                operator: Token::new(TokenType::Minus, "-".to_string(), LiteralType::Null, 1),
+                right: Box::new(Expr::Literal {
+                    value: "123".to_string(),
+                }),
+            }),
+            operator: Token::new(TokenType::Star, "*".to_string(), LiteralType::Null, 1),
+            right: Box::new(Expr::Grouping {
+                expression: Box::new(Expr::Literal {
+                    value: "45.67".to_string(),
+                }),
+            }),
+        };
+        let res = format!("{expression}");
+        println!("{res}");
+        assert!(format!("{expression}") == "(* (- 123) (group 45.67))");
+    }
 }
-

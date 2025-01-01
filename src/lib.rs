@@ -1,6 +1,7 @@
+pub mod ast;
+pub mod gen_ast;
 pub mod scanner;
 pub mod types;
-pub mod util;
 
 use scanner::{ErrorHandler, Scanner};
 
