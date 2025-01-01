@@ -115,7 +115,7 @@ impl<'a> Scanner<'a> {
             ' ' | '\r' | '\t' => {}
             '\n' => self.line += 1,
             '"' => self.process_string(),
-            c if c.is_digit(10) => self.process_number(),
+            c if c.is_ascii_digit() => self.process_number(),
             c if c == 'o' && self.cond_match('r') => {
                 self.add_token_wo_literal(TokenType::Or);
             }
@@ -180,16 +180,16 @@ impl<'a> Scanner<'a> {
         self.add_token(TokenType::String, LiteralType::Str(value));
     }
     fn process_number(&mut self) {
-        while self.peek().is_digit(10) {
+        while self.peek().is_ascii_digit() {
             self.advance();
         }
         // fractional part
-        if self.peek() == '.' && self.peek_next().is_digit(10) {
+        if self.peek() == '.' && self.peek_next().is_ascii_digit() {
             //consume the dot
             self.advance();
         }
         // get the post dot digits
-        while self.peek().is_digit(10) {
+        while self.peek().is_ascii_digit() {
             self.advance();
         }
 

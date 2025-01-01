@@ -1,5 +1,5 @@
 ft:
-  cargo run test.lox
+  cargo run --bin tlox_bin test.lox
 
 build: 
   cargo build
