@@ -1,14 +1,17 @@
+// This file is not used for now. Until I understand what's going on, I'll write everything
+// manually. The grammar is small for now.
+
 use std::fs::File;
 use std::io::{BufWriter, Write};
 
-fn define_ast(output_fpath: String, base_name: String, types: Vec<String>) {
+pub fn define_ast(output_fpath: String, base_name: String, types: Vec<String>) {
     // The original in the book had an output directory.
     // I think, using a file is better at this point.
     // This might change in the future.
     let path: String = format!("{output_fpath}");
     let file = File::create(path).unwrap();
     let mut writer = BufWriter::new(&file);
-    writeln!(writer, "trait {base_name} {{").unwrap();
+    writeln!(writer, "pub struct {base_name} {{").unwrap();
     writeln!(writer, "").unwrap();
     writeln!(writer, "}}").unwrap();
 
@@ -21,7 +24,7 @@ fn define_ast(output_fpath: String, base_name: String, types: Vec<String>) {
 }
 
 fn define_type<W: Write>(writer: &mut W, base_name: String, struct_name: String, fields: String) {
-    writeln!(writer, "pub struct {struct_name} impl {base_name} {{").unwrap();
+    writeln!(writer, "pub struct {struct_name} {{").unwrap();
     for field in fields.split(", ") {
         let field_str: Vec<&str> = field.split(" ").collect();
         let field_type = field_str[0].to_string();
