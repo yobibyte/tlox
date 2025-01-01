@@ -16,4 +16,4 @@ path = "src/main.rs" # Default for `main.rs`
 
 [[bin]]
 name = "generate_ast"
-path = "src/ast.rs" 
+path = "src/gen_ast.rs" 
