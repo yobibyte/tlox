@@ -33,6 +33,7 @@ fn define_type<W: Write>(writer: &mut W, _base_name: String, struct_name: String
     writeln!(writer, "}}").unwrap();
 }
 
+#[allow(dead_code)]
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     match args.len() {
