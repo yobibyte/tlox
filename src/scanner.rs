@@ -7,16 +7,12 @@ pub enum LiteralType {
     Num(f64),
     Null,
 }
-impl fmt::Display for LiteralType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            LiteralType::Str(s) => write!(f, "{s}"),
-            LiteralType::Num(n) => write!(f, "{n}"),
-            LiteralType::Null => write!(f, ""),
-        }
-    }
+pub struct Token {
+    ttype: TokenType,
+    lexeme: String,
+    literal: LiteralType,
+    line: usize,
 }
-
 pub struct Scanner<'a> {
     // I use to have source: &str here before.
     // At this point it seems easier to store source as array of chars instead of just a &str.
@@ -28,6 +24,37 @@ pub struct Scanner<'a> {
     line: usize,
     error_handler: &'a mut ErrorHandler,
 }
+#[derive(Default)]
+pub struct ErrorHandler {
+    pub has_error: bool,
+}
+
+impl fmt::Display for LiteralType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            LiteralType::Str(s) => write!(f, "{s}"),
+            LiteralType::Num(n) => write!(f, "{n}"),
+            LiteralType::Null => write!(f, ""),
+        }
+    }
+}
+
+impl Token {
+    pub fn new(ttype: TokenType, lexeme: String, literal: LiteralType, line: usize) -> Token {
+        Token {
+            ttype,
+            lexeme,
+            literal,
+            line,
+        }
+    }
+}
+impl fmt::Display for Token {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}{}", self.lexeme, self.literal)
+    }
+}
+
 impl<'a> Scanner<'a> {
     pub fn new(source: &str, error_handler: &'a mut ErrorHandler) -> Self {
         Self {
@@ -212,32 +239,6 @@ impl<'a> Scanner<'a> {
         };
         self.add_token_wo_literal(ttype);
     }
-}
-
-pub struct Token {
-    ttype: TokenType,
-    lexeme: String,
-    literal: LiteralType,
-    line: usize,
-}
-impl Token {
-    pub fn new(ttype: TokenType, lexeme: String, literal: LiteralType, line: usize) -> Token {
-        Token {
-            ttype,
-            lexeme,
-            literal,
-            line,
-        }
-    }
-}
-impl fmt::Display for Token {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}{}", self.lexeme, self.literal)
-    }
-}
-#[derive(Default)]
-pub struct ErrorHandler {
-    pub has_error: bool,
 }
 
 impl ErrorHandler {
