@@ -1,7 +1,7 @@
 use core::fmt;
 // In the book, they generate this automatically.
 // I will do it manually until I understand what's going on.
-use crate::scanner::Token;
+use crate::scanner::{LiteralType, Token};
 
 pub enum Expr {
     Binary {
@@ -12,9 +12,7 @@ pub enum Expr {
     Grouping {
         expression: Box<Expr>,
     },
-    Literal {
-        value: Token,
-    },
+    Literal(LiteralType),
     Unary {
         operator: Token,
         right: Box<Expr>,
@@ -33,7 +31,7 @@ impl fmt::Display for Expr {
                 write!(f, "({operator} {left} {right})")
             }
             // TODO: the book prints nil if literal is null, how will we do it?
-            Expr::Literal { value } => write!(f, "{value}"),
+            Expr::Literal(value) => write!(f, "{value}"),
             Expr::Grouping { expression } => write!(f, "(group {expression})"),
         }
     }
@@ -50,25 +48,11 @@ mod dests {
         let expression = Expr::Binary {
             left: Box::new(Expr::Unary {
                 operator: Token::new(TokenType::Minus, "-".to_string(), LiteralType::Null, 1),
-                right: Box::new(Expr::Literal {
-                    value: Token::new(
-                        TokenType::Number,
-                        "123".to_string(),
-                        LiteralType::Num(Numeric::Integer(123)),
-                        1,
-                    ),
-                }),
+                right: Box::new(Expr::Literal(LiteralType::Num(Numeric::Integer(123)))),
             }),
             operator: Token::new(TokenType::Star, "*".to_string(), LiteralType::Null, 1),
             right: Box::new(Expr::Grouping {
-                expression: Box::new(Expr::Literal {
-                    value: Token::new(
-                        TokenType::Number,
-                        "45.67".to_string(),
-                        LiteralType::Num(Numeric::Float(45.67)),
-                        1,
-                    ),
-                }),
+                expression: Box::new(Expr::Literal(LiteralType::Num(Numeric::Float(45.67)))),
             }),
         };
         let res = format!("{expression}");

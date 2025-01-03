@@ -2,21 +2,24 @@ use std::fmt;
 
 use crate::types::{TokenType, KEYWORDS};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Numeric {
     Integer(isize),
     Float(f64),
 }
+#[derive(Clone)]
 pub enum LiteralType {
     Str(String),
     Num(Numeric),
+    Bool(bool),
     Null,
 }
+#[derive(Clone)]
 pub struct Token {
-    ttype: TokenType,
-    lexeme: String,
-    literal: LiteralType,
-    line: usize,
+    pub ttype: TokenType,
+    pub lexeme: String,
+    pub literal: LiteralType,
+    pub line: usize,
 }
 pub struct Scanner<'a> {
     // I use to have source: &str here before.
@@ -40,6 +43,7 @@ impl fmt::Display for LiteralType {
             LiteralType::Str(s) => write!(f, "{s}"),
             LiteralType::Num(Numeric::Integer(n)) => write!(f, "{n}"),
             LiteralType::Num(Numeric::Float(n)) => write!(f, "{n}"),
+            LiteralType::Bool(b) => write!(f, "{b}"),
             LiteralType::Null => write!(f, ""),
         }
     }
