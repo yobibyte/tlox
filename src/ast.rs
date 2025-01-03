@@ -13,9 +13,7 @@ pub enum Expr {
         expression: Box<Expr>,
     },
     Literal {
-        // value: Token,
-        // TODO ^^^ use this, in the book it's object.
-        value: String,
+        value: Token,
     },
     Unary {
         operator: Token,
@@ -44,7 +42,7 @@ impl fmt::Display for Expr {
 #[cfg(test)]
 mod dests {
     use super::*;
-    use crate::scanner::LiteralType;
+    use crate::scanner::{LiteralType, Numeric};
     use crate::types::TokenType;
 
     #[test]
@@ -53,13 +51,23 @@ mod dests {
             left: Box::new(Expr::Unary {
                 operator: Token::new(TokenType::Minus, "-".to_string(), LiteralType::Null, 1),
                 right: Box::new(Expr::Literal {
-                    value: "123".to_string(),
+                    value: Token::new(
+                        TokenType::Number,
+                        "123".to_string(),
+                        LiteralType::Num(Numeric::Integer(123)),
+                        1,
+                    ),
                 }),
             }),
             operator: Token::new(TokenType::Star, "*".to_string(), LiteralType::Null, 1),
             right: Box::new(Expr::Grouping {
                 expression: Box::new(Expr::Literal {
-                    value: "45.67".to_string(),
+                    value: Token::new(
+                        TokenType::Number,
+                        "45.67".to_string(),
+                        LiteralType::Num(Numeric::Float(45.67)),
+                        1,
+                    ),
                 }),
             }),
         };

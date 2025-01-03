@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::sync::LazyLock;
 
 #[derive(Copy, Clone, Debug)]
+// I don't like this, but we have TokenType and LiteralType that somewhat intersect.
 pub enum TokenType {
     // Single-character tokens.
     LeftParen,

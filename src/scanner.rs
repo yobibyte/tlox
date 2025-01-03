@@ -2,9 +2,14 @@ use std::fmt;
 
 use crate::types::{TokenType, KEYWORDS};
 
+#[derive(Debug)]
+pub enum Numeric {
+    Integer(isize),
+    Float(f64),
+}
 pub enum LiteralType {
     Str(String),
-    Num(f64),
+    Num(Numeric),
     Null,
 }
 pub struct Token {
@@ -33,7 +38,8 @@ impl fmt::Display for LiteralType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             LiteralType::Str(s) => write!(f, "{s}"),
-            LiteralType::Num(n) => write!(f, "{n}"),
+            LiteralType::Num(Numeric::Integer(n)) => write!(f, "{n}"),
+            LiteralType::Num(Numeric::Float(n)) => write!(f, "{n}"),
             LiteralType::Null => write!(f, ""),
         }
     }
@@ -50,8 +56,10 @@ impl Token {
     }
 }
 impl fmt::Display for Token {
+    // TODO: I am not sure if we should pritnt lexeme or the LiteralType.
+    // Double check and figure this out.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}{}", self.lexeme, self.literal)
+        write!(f, "{}", self.lexeme)
     }
 }
 
@@ -221,12 +229,13 @@ impl<'a> Scanner<'a> {
         }
 
         let value: String = self.source[self.start..self.current].iter().collect();
-        // TODO: do error handling with the handler. Proceed further. Add a NULL token mb?
+        // TODO: do error handling with the handler. Proceed further.
         let value: f64 = value
             .to_string()
             .parse()
             .expect("Could not parse a double.");
-        self.add_token(TokenType::Number, LiteralType::Num(value));
+        // TODO: parse the integer too!
+        self.add_token(TokenType::Number, LiteralType::Num(Numeric::Float(value)));
     }
     fn process_identifier(&mut self) {
         while self.peek().is_alphanumeric() || self.peek() == '_' {
